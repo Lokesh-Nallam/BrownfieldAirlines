@@ -5,7 +5,9 @@ package com.hackathon.CheckinMicroservice.service;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.hackathon.CheckinMicroservice.entity.BaggageList;
 import com.hackathon.CheckinMicroservice.entity.CheckInList;
@@ -20,6 +22,8 @@ public class CheckInServiceImpl implements ICheckInService {
 	private ICheckInRepository checkRep;
 	@Autowired
 	private IBaggageRepository bagRep;
+	@Autowired
+	private RestTemplate restTemp;
 
 	@Override
 	public long checkIn(CheckInList checkin) {
@@ -27,6 +31,8 @@ public class CheckInServiceImpl implements ICheckInService {
 		checkin.setCheckintime(date);
 		long id = checkRep.save(checkin).getId();
 		//need to update loyalty and status to boarded using booking
+		ResponseEntity<String> st=restTemp.getForEntity("http://localhost:8065/updateStatus/"+checkin.getBookid(),String.class);
+		
 		return id;
 		}
 
